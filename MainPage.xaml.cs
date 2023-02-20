@@ -1,6 +1,4 @@
-﻿using System.Xml;
-
-namespace TrackingMarques;
+﻿namespace TrackingMarques;
 
 public partial class MainPage : ContentPage
 {
@@ -54,13 +52,10 @@ public partial class MainPage : ContentPage
                 numeroFichero++;
             }
             File.WriteAllText($"{ruta}{fichero} ({numeroFichero}).{extension}", xml);
-            //doc.Save($"{ruta}{fichero} ({numeroFichero}).{extension}");
         }
         else
         {
-            //  doc.Save($"{ruta}{fichero}.{extension}");
             File.WriteAllText($"{ruta}{fichero}.{extension}", xml);
-
         }
     }
 
@@ -73,11 +68,11 @@ public partial class MainPage : ContentPage
         Location location = await Geolocation.Default.GetLocationAsync(request, _cancelTokenSource.Token);
 
         xml = xml + "<punt>" + "\r\n";
-        xml = xml + "<nom>" + PuntInteresEntry.Text + "</nom>" + "\r\n";
+        xml = xml + "<nom>" + nombre + "</nom>" + "\r\n";
         xml = xml + "<latitut>" + location.Latitude + "</latitut>" + "\r\n";
         xml = xml + "<longitut>" + location.Longitude + "</longitut>" + "\r\n";
         xml = xml + "<elevacio>" + location.Altitude + "</elevacio>" + "\r\n";
-        xml = xml + "<dataHora>" + DateTime.Now + "</dataHora>" + "\r\n";
+        xml = xml + "<dataHora>" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ") + "</dataHora>" + "\r\n";
         xml = xml + "</punt>" + "\r\n";
 
         numeroDePunts++;
