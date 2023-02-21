@@ -3,23 +3,31 @@
 public partial class MainPage : ContentPage
 {
 
-    int numeroDePunts = 0;
+    int numeroDePuntsInteres = 0;
+    int numeroDePuntsRuta = 0;
     private CancellationTokenSource _cancelTokenSource;
-    string xml = string.Empty;
+    string xmlPuntsInteres = string.Empty;
+    string xmlPuntsRuta = string.Empty;
+    string textPuntsInteres = "Punts interés introduïts";
+    string textPuntsRuta = "Punts ruta introduïts";
 
     public MainPage()
     {
-        numeroDePunts = 0;
+        numeroDePuntsInteres = 0;
+        numeroDePuntsRuta = 0;
         InitializeComponent();
-        LabelPunts.Text = $"Punts introduïts: 0";
+        LabelPuntsInteres.Text = $"{textPuntsInteres}: 0";
+        LabelPuntsRuta.Text = $"{textPuntsRuta}: 0";
     }
     private async void IniciBtn_Clicked(object sender, EventArgs e)
     {
-        xml = "<punts>" + "\r\n";
-        numeroDePunts = 0;
-        LabelPunts.Text = $"Punts introduïts: {numeroDePunts}";
-        await anyadirWPT("Punt Inici de la ruta");
+        numeroDePuntsInteres = 0;
+        LabelPuntsInteres.Text = $"{textPuntsInteres}: {numeroDePuntsInteres}";
+        numeroDePuntsRuta = 0;
+        LabelPuntsRuta.Text = $"{textPuntsRuta}: {numeroDePuntsRuta}";
+        await AnyadirRuta();
         PuntInteresBtn.IsEnabled = true;
+        PuntRutaBtn.IsEnabled = true;
     }
 
     private async void PuntInteresBtn_Clicked(object sender, EventArgs e)
@@ -27,39 +35,45 @@ public partial class MainPage : ContentPage
         IniciBtn.IsEnabled = false;
         PuntInteresBtn.IsEnabled = false;
         FinalBtn.IsEnabled = false;
-        await anyadirWPT(PuntInteresEntry.Text);
+        PuntRutaBtn.IsEnabled = false;
+        await AnyadirWPT(PuntInteresEntry.Text);
         PuntInteresEntry.Text = null;
         IniciBtn.IsEnabled = true;
         PuntInteresBtn.IsEnabled = true;
         FinalBtn.IsEnabled = true;
+        PuntRutaBtn.IsEnabled = true;
     }
-
-    private async void FinalBtn_Clicked(object sender, EventArgs e)
+    private async void PuntRutaBtn_Clicked(object sender, EventArgs e)
     {
-        await anyadirWPT("Final de la ruta");
-        xml = xml + "</punts>";
+        IniciBtn.IsEnabled = false;
         PuntInteresBtn.IsEnabled = false;
         FinalBtn.IsEnabled = false;
+        PuntRutaBtn.IsEnabled = false;
+        await AnyadirRuta();
+        PuntInteresEntry.Text = null;
+        IniciBtn.IsEnabled = true;
+        PuntInteresBtn.IsEnabled = true;
+        FinalBtn.IsEnabled = true;
+        PuntRutaBtn.IsEnabled = true;
+    }
+    private async void FinalBtn_Clicked(object sender, EventArgs e)
+    {
+        await AnyadirRuta();
+        PuntInteresBtn.IsEnabled = false;
+        FinalBtn.IsEnabled = false;
+        PuntRutaBtn.IsEnabled = false;
         string ruta = "/storage/emulated/0/Documents/";
-        string fichero = "ruta";
+        string fichero = $"ruta_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}";
         string extension = "xml";
-        int numeroFichero = 0;
-        if (File.Exists($"{ruta}{fichero}.{extension}"))
-        {
-            numeroFichero++;
-            while (File.Exists($"{ruta}{fichero} ({numeroFichero}).{extension}"))
-            {
-                numeroFichero++;
-            }
-            File.WriteAllText($"{ruta}{fichero} ({numeroFichero}).{extension}", xml);
-        }
-        else
-        {
-            File.WriteAllText($"{ruta}{fichero}.{extension}", xml);
-        }
+        string xmlFinal = string.Empty;
+        xmlFinal = "<root>\r\n";
+        xmlFinal = xmlFinal + "<puntsRuta>\r\n" + xmlPuntsRuta + "</puntsRuta>\r\n";
+        xmlFinal = xmlFinal + "<puntsInteres>\r\n" + xmlPuntsInteres + "</puntsInteres>\r\n";
+        xmlFinal = xmlFinal + "</root>";
+        File.WriteAllText($"{ruta}{fichero}.{extension}", xmlFinal);
     }
 
-    private async Task anyadirWPT(string nombre)
+    private async Task AnyadirWPT(string nombre)
     {
         GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(5));
 
@@ -67,16 +81,36 @@ public partial class MainPage : ContentPage
 
         Location location = await Geolocation.Default.GetLocationAsync(request, _cancelTokenSource.Token);
 
-        xml = xml + "<punt>" + "\r\n";
-        xml = xml + "<nom>" + nombre + "</nom>" + "\r\n";
-        xml = xml + "<latitut>" + location.Latitude + "</latitut>" + "\r\n";
-        xml = xml + "<longitut>" + location.Longitude + "</longitut>" + "\r\n";
-        xml = xml + "<elevacio>" + location.Altitude + "</elevacio>" + "\r\n";
-        xml = xml + "<dataHora>" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ") + "</dataHora>" + "\r\n";
-        xml = xml + "</punt>" + "\r\n";
+        xmlPuntsInteres = xmlPuntsInteres + "<punt>" + "\r\n";
+        xmlPuntsInteres = xmlPuntsInteres + "<nom>" + nombre + "</nom>" + "\r\n";
+        xmlPuntsInteres = xmlPuntsInteres + "<latitut>" + location.Latitude + "</latitut>" + "\r\n";
+        xmlPuntsInteres = xmlPuntsInteres + "<longitut>" + location.Longitude + "</longitut>" + "\r\n";
+        xmlPuntsInteres = xmlPuntsInteres + "<elevacio>" + location.Altitude + "</elevacio>" + "\r\n";
+        xmlPuntsInteres = xmlPuntsInteres + "<dataHora>" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ") + "</dataHora>" + "\r\n";
+        xmlPuntsInteres = xmlPuntsInteres + "</punt>" + "\r\n";
 
-        numeroDePunts++;
-        LabelPunts.Text = $"Punts introduïts: {numeroDePunts}";
+        numeroDePuntsInteres++;
+        LabelPuntsInteres.Text = $"{textPuntsInteres}: {numeroDePuntsInteres}";
     }
+
+    private async Task AnyadirRuta()
+    {
+        GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(5));
+
+        _cancelTokenSource = new CancellationTokenSource();
+
+        Location location = await Geolocation.Default.GetLocationAsync(request, _cancelTokenSource.Token);
+
+        xmlPuntsRuta = xmlPuntsRuta + "<ruta>" + "\r\n";
+        xmlPuntsRuta = xmlPuntsRuta + "<latitut>" + location.Latitude + "</latitut>" + "\r\n";
+        xmlPuntsRuta = xmlPuntsRuta + "<longitut>" + location.Longitude + "</longitut>" + "\r\n";
+        xmlPuntsRuta = xmlPuntsRuta + "<elevacio>" + location.Altitude + "</elevacio>" + "\r\n";
+        xmlPuntsRuta = xmlPuntsRuta + "<dataHora>" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ") + "</dataHora>" + "\r\n";
+        xmlPuntsRuta = xmlPuntsRuta + "</ruta>" + "\r\n";
+
+        numeroDePuntsRuta++;
+        LabelPuntsRuta.Text = $"{textPuntsRuta}: {numeroDePuntsRuta}";
+    }
+
 }
 
