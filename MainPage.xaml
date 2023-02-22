@@ -12,31 +12,31 @@
             <Image
                 Source="logo_montilivi_2015_vermell.png"
                 SemanticProperties.Description="Institut Montilivi"
-                HeightRequest="200"
+                HeightRequest="90"
                 HorizontalOptions="Center" />
 
             <Label
-                Text="1r ASIX - 1r DAW 2022-2023"
+                Text="1r ASIX - 1r DAM 2022-2023"
                 SemanticProperties.HeadingLevel="Level1"
-                FontSize="32"
+                FontSize="24"
                 HorizontalOptions="Center" />
 
             <Label
                 Text="MP4 - Llenguatge de marques i sistemes de la informació"
                 SemanticProperties.HeadingLevel="Level2"
                 SemanticProperties.Description="Welcome to dot net Multi platform App U I"
-                FontSize="18"
+                FontSize="16"
                 HorizontalOptions="Center" />
 
             <Button
                 x:Name="IniciBtn"
                 Text="Inici de la ruta"
-                SemanticProperties.Hint="Counts the number of times you click"
+                SemanticProperties.Hint="Inicia la ruta"
                 Clicked="IniciBtn_Clicked"
                 HorizontalOptions="Center" />
 
             <Label
-                x:Name="LabelPunts"
+                x:Name="LabelPuntsInteres"
                 SemanticProperties.HeadingLevel="Level2"
                 SemanticProperties.Description="Welcome to dot net Multi platform App U I"
                 FontSize="10"
@@ -45,21 +45,36 @@
             <Button
                 x:Name="PuntInteresBtn"
                 Text="Marcar punt d'interés"
-                SemanticProperties.Hint="Counts the number of times you click"
+                SemanticProperties.Hint="Marcar un punt d'interés"
                 Clicked="PuntInteresBtn_Clicked"
                 IsEnabled="False"
                 HorizontalOptions="Center" />
-            
+
             <Entry
                 x:Name="PuntInteresEntry"
                 MaxLength="100"
                 Text="" 
-                Placeholder="Nom punt interés"/>       
+                Placeholder="Nom punt interés"/>
+
+            <Label
+                x:Name="LabelPuntsRuta"
+                SemanticProperties.HeadingLevel="Level2"
+                SemanticProperties.Description="Welcome to dot net Multi platform App U I"
+                FontSize="10"
+                HorizontalOptions="Center" />
+
+            <Button
+                x:Name="PuntRutaBtn"
+                Text="Marcar punt de la ruta"
+                SemanticProperties.Hint="Marcar un punt de la ruta"
+                Clicked="PuntRutaBtn_Clicked"
+                IsEnabled="False"
+                HorizontalOptions="Center" />
 
             <Button 
                 x:Name="FinalBtn"
                 Text="Final de la ruta"
-                SemanticProperties.Hint="Counts the number of times you click"
+                SemanticProperties.Hint="Finalitza la ruta"
                 Clicked="FinalBtn_Clicked"
                 IsEnabled="False"
                 HorizontalOptions="Center" />
