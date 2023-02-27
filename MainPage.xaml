@@ -21,12 +21,26 @@
                 FontSize="24"
                 HorizontalOptions="Center" />
 
-            <Label
+            <!--<Label
                 Text="MP4 - Llenguatge de marques i sistemes de la informació"
                 SemanticProperties.HeadingLevel="Level2"
                 SemanticProperties.Description="Welcome to dot net Multi platform App U I"
                 FontSize="16"
-                HorizontalOptions="Center" />
+                HorizontalOptions="Center" />-->
+            <!--<Button
+                x:Name="RecuperarRutaBtn"
+                Text="Recuperar ruta no finalitzada"
+                SemanticProperties.Hint="Recuperar ruta no finalitzada"
+                Clicked="RecuperarBtn_Clicked"
+                HorizontalOptions="Center" />-->
+
+            <Button 
+                x:Name="RecuperarBtn"
+                Text="Recuperar ruta no finalitzada"
+                SemanticProperties.Hint="Recuperar ruta no finalitzada"
+                Clicked="RecuperarBtn_Clicked"
+                HorizontalOptions="Center"
+                />
 
             <Button
                 x:Name="IniciBtn"
