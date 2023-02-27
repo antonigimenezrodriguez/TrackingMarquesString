@@ -13,12 +13,12 @@ public partial class MainPage : ContentPage
     string xmlPuntsRuta = string.Empty;
     string textPuntsInteres = "Punts interés introduïts";
     string textPuntsRuta = "Punts ruta introduïts";
-    SQLiteConnection conn = new SQLiteConnection("TrackingMarques");
+    SQLiteAsyncConnection conn = new SQLiteAsyncConnection(Constants.DatabasePath, Constants.Flags);
 
     public MainPage()
     {
-        CrearTaules();
-      
+        
+
         numeroDePuntsInteres = 0;
         numeroDePuntsRuta = 0;
         InitializeComponent();
@@ -28,6 +28,7 @@ public partial class MainPage : ContentPage
 
     private async void IniciBtn_Clicked(object sender, EventArgs e)
     {
+        await CrearTaules();
         numeroDePuntsInteres = 0;
         LabelPuntsInteres.Text = $"{textPuntsInteres}: {numeroDePuntsInteres}";
         numeroDePuntsRuta = 0;
@@ -35,6 +36,7 @@ public partial class MainPage : ContentPage
         await AnyadirRuta();
         PuntInteresBtn.IsEnabled = true;
         PuntRutaBtn.IsEnabled = true;
+        await InsertarNovaRutaBD();
     }
 
     private async void PuntInteresBtn_Clicked(object sender, EventArgs e)
@@ -82,7 +84,7 @@ public partial class MainPage : ContentPage
 
     private async Task AnyadirWPT(string nombre)
     {
-        GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(5));
+        GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(2));
 
         _cancelTokenSource = new CancellationTokenSource();
 
@@ -119,11 +121,34 @@ public partial class MainPage : ContentPage
         LabelPuntsRuta.Text = $"{textPuntsRuta}: {numeroDePuntsRuta}";
     }
 
-    private void CrearTaules()
+    private async Task CrearTaules()
     {
-        conn.CreateTable<Ruta>();
-        conn.CreateTable<PuntInteres>();
-        conn.CreateTable<PuntRuta>();
+        await conn.CreateTableAsync<Ruta>();
+
+        await conn.CreateTableAsync<PuntInteres>();
+
+        await conn.CreateTableAsync<PuntRuta>();
+    }
+
+    private async Task InsertarNovaRutaBD()
+    {
+        GeolocationRequest request = new GeolocationRequest(GeolocationAccuracy.Best, TimeSpan.FromSeconds(2));
+
+        _cancelTokenSource = new CancellationTokenSource();
+
+        Location location = await Geolocation.Default.GetLocationAsync(request, _cancelTokenSource.Token);
+        DateTime ara = DateTime.Now;
+        Ruta ruta = new Ruta();
+        ruta.Nom = "Test";
+        ruta.DataHora = ara;
+        ruta.Finalitzada = false;
+
+        int result = await conn.InsertAsync(ruta);
+
+        var rutes = await conn.Table<Ruta>().ToListAsync();
+        Ruta rutaDB = rutes.Where(w => w.DataHora == ara).FirstOrDefault();
+
+        var asd = "";
     }
 }
 

@@ -8,7 +8,7 @@ namespace TrackingMarques.Models
         [PrimaryKey, AutoIncrement, Column("id")]
         public int Id { get; set; }
         public string Nom { get; set; }
-        public List<PuntRuta> PuntsRuta { get; set; }
-        public List<PuntInteres> PuntsInteres { get; set; }
+        public DateTime DataHora { get; set; }
+        public bool Finalitzada { get; set; }
     }
 }
