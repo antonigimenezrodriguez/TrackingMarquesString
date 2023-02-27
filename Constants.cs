@@ -11,6 +11,10 @@ public static class Constants
         // enable multi-threaded database access
         SQLiteOpenFlags.SharedCache;
 
-    public static string DatabasePath =>
-        Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename);
+    public static string DatabasePath => Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename);
+
+    public static string RutaFitxer = "/storage/emulated/0/Documents/";
+    public static string ExtensioFitxer = "xml";
+    public static string TextPuntsInteres = "Punts interés introduïts";
+    public static string TextPuntsRuta = "Punts ruta introduïts";
 }

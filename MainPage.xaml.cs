@@ -9,10 +9,6 @@ public partial class MainPage : ContentPage
     int numeroDePuntsInteres = 0;
     int numeroDePuntsRuta = 0;
     private CancellationTokenSource _cancelTokenSource;
-    //string xmlPuntsInteres = string.Empty;
-    //string xmlPuntsRuta = string.Empty;
-    string textPuntsInteres = "Punts interés introduïts";
-    string textPuntsRuta = "Punts ruta introduïts";
     int rutaId = 0;
     SQLiteAsyncConnection conn = new SQLiteAsyncConnection(Constants.DatabasePath, Constants.Flags);
 
@@ -21,8 +17,8 @@ public partial class MainPage : ContentPage
         numeroDePuntsInteres = 0;
         numeroDePuntsRuta = 0;
         InitializeComponent();
-        LabelPuntsInteres.Text = $"{textPuntsInteres}: 0";
-        LabelPuntsRuta.Text = $"{textPuntsRuta}: 0";
+        LabelPuntsInteres.Text = $"{Constants.TextPuntsInteres}: 0";
+        LabelPuntsRuta.Text = $"{Constants.TextPuntsRuta}: 0";
         var asd = conn.Table<Ruta>().Where(w => w.Finalitzada).FirstOrDefaultAsync().Result;
     }
 
@@ -30,9 +26,9 @@ public partial class MainPage : ContentPage
     {
         await CrearTaules();
         numeroDePuntsInteres = 0;
-        LabelPuntsInteres.Text = $"{textPuntsInteres}: {numeroDePuntsInteres}";
+        LabelPuntsInteres.Text = $"{Constants.TextPuntsInteres}: {numeroDePuntsInteres}";
         numeroDePuntsRuta = 0;
-        LabelPuntsRuta.Text = $"{textPuntsRuta}: {numeroDePuntsRuta}";
+        LabelPuntsRuta.Text = $"{Constants.TextPuntsRuta}: {numeroDePuntsRuta}";
         await InsertarNovaRutaBD();
         await AnyadirPuntRuta();
         PuntInteresBtn.IsEnabled = true;
@@ -73,15 +69,6 @@ public partial class MainPage : ContentPage
         PuntInteresBtn.IsEnabled = false;
         FinalBtn.IsEnabled = false;
         PuntRutaBtn.IsEnabled = false;
-        /* string ruta = "/storage/emulated/0/Documents/";
-         string fichero = $"ruta_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}";
-         string extension = "xml";
-         string xmlFinal = string.Empty;
-         xmlFinal = "<root>\r\n";
-         xmlFinal = xmlFinal + "<puntsRuta>\r\n" + xmlPuntsRuta + "</puntsRuta>\r\n";
-         xmlFinal = xmlFinal + "<puntsInteres>\r\n" + xmlPuntsInteres + "</puntsInteres>\r\n";
-         xmlFinal = xmlFinal + "</root>";
-         File.WriteAllText($"{ruta}{fichero}.{extension}", xmlFinal);*/
     }
 
     private async Task FinalitzarRuta()
@@ -100,8 +87,8 @@ public partial class MainPage : ContentPage
             foreach (PuntRuta puntRuta in puntsRuta)
             {
                 xml = xml + "<ruta>" + "\r\n";
-                xml = xml + "<latitut>" + puntRuta.Latitud + "</latitut>" + "\r\n";
-                xml = xml + "<longitut>" + puntRuta.Longitud + "</longitut>" + "\r\n";
+                xml = xml + "<latitud>" + puntRuta.Latitud + "</latitud>" + "\r\n";
+                xml = xml + "<longitud>" + puntRuta.Longitud + "</longitud>" + "\r\n";
                 xml = xml + "<elevacio>" + puntRuta.Elevacio + "</elevacio>" + "\r\n";
                 xml = xml + "<dataHora>" + puntRuta.DataHora.ToString("yyyy-MM-ddTHH:mm:ssZ") + "</dataHora>" + "\r\n";
                 xml = xml + "</ruta>" + "\r\n";
@@ -113,8 +100,8 @@ public partial class MainPage : ContentPage
             {
                 xml = xml + "<punt>" + "\r\n";
                 xml = xml + "<nom>" + puntInteres.Nom + "</nom>" + "\r\n";
-                xml = xml + "<latitut>" + puntInteres.Latitud + "</latitut>" + "\r\n";
-                xml = xml + "<longitut>" + puntInteres.Longitud + "</longitut>" + "\r\n";
+                xml = xml + "<latitud>" + puntInteres.Latitud + "</latitud>" + "\r\n";
+                xml = xml + "<longitud>" + puntInteres.Longitud + "</longitud>" + "\r\n";
                 xml = xml + "<elevacio>" + puntInteres.Elevacio + "</elevacio>" + "\r\n";
                 xml = xml + "<dataHora>" + puntInteres.DataHora.ToString("yyyy-MM-ddTHH:mm:ssZ") + "</dataHora>" + "\r\n";
                 xml = xml + "</punt>" + "\r\n";
@@ -122,10 +109,8 @@ public partial class MainPage : ContentPage
             xml = xml + "</puntsInteres>\r\n";
             xml = xml + "</root>\r\n";
 
-            string rutaFitxer = "/storage/emulated/0/Documents/";
             string fitxer = $"ruta_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}";
-            string extension = "xml";
-            File.WriteAllText($"{rutaFitxer}{fitxer}.{extension}", xml);
+            File.WriteAllText($"{Constants.RutaFitxer}{fitxer}.{Constants.ExtensioFitxer}", xml);
             await conn.UpdateAsync(ruta);
         }
     }
@@ -138,18 +123,10 @@ public partial class MainPage : ContentPage
 
         Location location = await Geolocation.Default.GetLocationAsync(request, _cancelTokenSource.Token);
 
-        /*  xmlPuntsInteres = xmlPuntsInteres + "<punt>" + "\r\n";
-          xmlPuntsInteres = xmlPuntsInteres + "<nom>" + nom + "</nom>" + "\r\n";
-          xmlPuntsInteres = xmlPuntsInteres + "<latitut>" + location.Latitude + "</latitut>" + "\r\n";
-          xmlPuntsInteres = xmlPuntsInteres + "<longitut>" + location.Longitude + "</longitut>" + "\r\n";
-          xmlPuntsInteres = xmlPuntsInteres + "<elevacio>" + location.Altitude + "</elevacio>" + "\r\n";
-          xmlPuntsInteres = xmlPuntsInteres + "<dataHora>" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ") + "</dataHora>" + "\r\n";
-          xmlPuntsInteres = xmlPuntsInteres + "</punt>" + "\r\n";*/
-
         await AnyadirPuntInteresDB(location, nom);
 
         numeroDePuntsInteres++;
-        LabelPuntsInteres.Text = $"{textPuntsInteres}: {numeroDePuntsInteres}";
+        LabelPuntsInteres.Text = $"{Constants.TextPuntsInteres}: {numeroDePuntsInteres}";
     }
 
     private async Task AnyadirPuntRuta()
@@ -160,17 +137,10 @@ public partial class MainPage : ContentPage
 
         Location location = await Geolocation.Default.GetLocationAsync(request, _cancelTokenSource.Token);
 
-        /* xmlPuntsRuta = xmlPuntsRuta + "<ruta>" + "\r\n";
-         xmlPuntsRuta = xmlPuntsRuta + "<latitut>" + location.Latitude + "</latitut>" + "\r\n";
-         xmlPuntsRuta = xmlPuntsRuta + "<longitut>" + location.Longitude + "</longitut>" + "\r\n";
-         xmlPuntsRuta = xmlPuntsRuta + "<elevacio>" + location.Altitude + "</elevacio>" + "\r\n";
-         xmlPuntsRuta = xmlPuntsRuta + "<dataHora>" + DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ") + "</dataHora>" + "\r\n";
-         xmlPuntsRuta = xmlPuntsRuta + "</ruta>" + "\r\n";*/
-
         await AnyadirPuntRutaDB(location);
 
         numeroDePuntsRuta++;
-        LabelPuntsRuta.Text = $"{textPuntsRuta}: {numeroDePuntsRuta}";
+        LabelPuntsRuta.Text = $"{Constants.TextPuntsRuta}: {numeroDePuntsRuta}";
     }
 
     private async Task CrearTaules()
@@ -249,9 +219,8 @@ public partial class MainPage : ContentPage
             int numeroPuntsRuta = puntsRuta.Count;
             numeroDePuntsInteres = numeroPuntsInteres;
             numeroDePuntsRuta = numeroPuntsRuta;
-            LabelPuntsInteres.Text = $"{textPuntsInteres}: {numeroPuntsInteres}";
-            LabelPuntsRuta.Text = $"{textPuntsRuta}: {numeroPuntsRuta}";
+            LabelPuntsInteres.Text = $"{Constants.TextPuntsInteres}: {numeroPuntsInteres}";
+            LabelPuntsRuta.Text = $"{Constants.TextPuntsRuta}: {numeroPuntsRuta}";
         }
     }
 }
-
