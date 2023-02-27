@@ -1,4 +1,7 @@
-﻿namespace TrackingMarques;
+﻿using SQLite;
+using TrackingMarques.Models;
+
+namespace TrackingMarques;
 
 public partial class MainPage : ContentPage
 {
@@ -10,15 +13,19 @@ public partial class MainPage : ContentPage
     string xmlPuntsRuta = string.Empty;
     string textPuntsInteres = "Punts interés introduïts";
     string textPuntsRuta = "Punts ruta introduïts";
+    SQLiteConnection conn = new SQLiteConnection("TrackingMarques");
 
     public MainPage()
     {
+        CrearTaules();
+      
         numeroDePuntsInteres = 0;
         numeroDePuntsRuta = 0;
         InitializeComponent();
         LabelPuntsInteres.Text = $"{textPuntsInteres}: 0";
         LabelPuntsRuta.Text = $"{textPuntsRuta}: 0";
     }
+
     private async void IniciBtn_Clicked(object sender, EventArgs e)
     {
         numeroDePuntsInteres = 0;
@@ -112,5 +119,11 @@ public partial class MainPage : ContentPage
         LabelPuntsRuta.Text = $"{textPuntsRuta}: {numeroDePuntsRuta}";
     }
 
+    private void CrearTaules()
+    {
+        conn.CreateTable<Ruta>();
+        conn.CreateTable<PuntInteres>();
+        conn.CreateTable<PuntRuta>();
+    }
 }
 
