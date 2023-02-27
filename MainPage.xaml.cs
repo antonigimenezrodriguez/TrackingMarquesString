@@ -17,8 +17,8 @@ public partial class MainPage : ContentPage
         numeroDePuntsInteres = 0;
         numeroDePuntsRuta = 0;
         InitializeComponent();
-        LabelPuntsInteres.Text = $"{Constants.TextPuntsInteres}: 0";
-        LabelPuntsRuta.Text = $"{Constants.TextPuntsRuta}: 0";
+        LabelPuntsInteres.Text = $"{Constants.TextPuntsInteres}: {numeroDePuntsInteres}";
+        LabelPuntsRuta.Text = $"{Constants.TextPuntsRuta}: {numeroDePuntsRuta}";
         var asd = conn.Table<Ruta>().Where(w => w.Finalitzada).FirstOrDefaultAsync().Result;
     }
 
@@ -184,7 +184,7 @@ public partial class MainPage : ContentPage
         Location location = await Geolocation.Default.GetLocationAsync(request, _cancelTokenSource.Token);
         DateTime ara = DateTime.Now;
         Ruta ruta = new Ruta();
-        ruta.Nom = "Test";
+        ruta.Nom = "Ruta";
         ruta.DataHora = ara;
         ruta.Finalitzada = false;
 
