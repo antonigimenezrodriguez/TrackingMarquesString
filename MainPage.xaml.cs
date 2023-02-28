@@ -1,4 +1,7 @@
-﻿using SQLite;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Storage;
+using SQLite;
+using System.Text;
 using TrackingMarques.Models;
 
 namespace TrackingMarques;
@@ -71,6 +74,36 @@ public partial class MainPage : ContentPage
         PuntRutaBtn.IsEnabled = false;
     }
 
+    private async void RecuperarBtn_Clicked(object sender, EventArgs e)
+    {
+        Ruta ruta = await conn.Table<Ruta>().Where(w => !w.Finalitzada).FirstOrDefaultAsync();
+        if (ruta != null)
+        {
+            rutaId = ruta.Id;
+            List<PuntInteres> puntsInteres = await conn.Table<PuntInteres>().Where(w => w.RutaId == ruta.Id).ToListAsync();
+            List<PuntRuta> puntsRuta = await conn.Table<PuntRuta>().Where(w => w.RutaId == ruta.Id).ToListAsync();
+            int numeroPuntsInteres = puntsInteres.Count;
+            int numeroPuntsRuta = puntsRuta.Count;
+            numeroDePuntsInteres = numeroPuntsInteres;
+            numeroDePuntsRuta = numeroPuntsRuta;
+            LabelPuntsInteres.Text = $"{Constants.TextPuntsInteres}: {numeroPuntsInteres}";
+            LabelPuntsRuta.Text = $"{Constants.TextPuntsRuta}: {numeroPuntsRuta}";
+            if (numeroDePuntsInteres > 0 && numeroDePuntsRuta > 0)
+            {
+                FinalBtn.IsEnabled = true;
+            }
+            RecuperarBtn.IsEnabled = false;
+            PuntInteresBtn.IsEnabled = true;
+            PuntRutaBtn.IsEnabled = true;
+            IniciBtn.IsEnabled = true;
+            await Toast.Make($"S'ha recuperat la ruta amb data d'inici: {ruta.DataHora}").Show();
+        }
+        else
+        {
+            await Toast.Make($"No s'ha pogut recuperar cap ruta").Show();
+        }
+    }
+
     private async Task FinalitzarRuta()
     {
         Ruta ruta = await conn.Table<Ruta>().Where(w => w.Id == rutaId).FirstOrDefaultAsync();
@@ -110,8 +143,19 @@ public partial class MainPage : ContentPage
             xml = xml + "</root>\r\n";
 
             string fitxer = $"ruta_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}";
-            File.WriteAllText($"{Constants.RutaFitxer}{fitxer}.{Constants.ExtensioFitxer}", xml);
-            await conn.UpdateAsync(ruta);
+            using var stream = new MemoryStream(Encoding.Default.GetBytes(xml));
+            _cancelTokenSource = new CancellationTokenSource();
+            try
+            {
+                var fileLocation = await FileSaver.Default.SaveAsync($"{fitxer}.{Constants.ExtensioFitxer}", stream, _cancelTokenSource.Token);
+                await Toast.Make($"File is saved: {fileLocation}").Show(_cancelTokenSource.Token);
+                await conn.UpdateAsync(ruta);
+            }
+            catch (Exception ex)
+            {
+                await Toast.Make($"File is not saved, {ex.Message}").Show(_cancelTokenSource.Token);
+            }
+            RecuperarBtn.IsEnabled = true;
         }
     }
 
