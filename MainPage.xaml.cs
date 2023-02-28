@@ -1,4 +1,7 @@
-﻿using SQLite;
+﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Storage;
+using SQLite;
+using System.Text;
 using TrackingMarques.Models;
 
 namespace TrackingMarques;
@@ -17,18 +20,14 @@ public partial class MainPage : ContentPage
         numeroDePuntsInteres = 0;
         numeroDePuntsRuta = 0;
         InitializeComponent();
-        LabelPuntsInteres.Text = $"{Constants.TextPuntsInteres}: {numeroDePuntsInteres}";
-        LabelPuntsRuta.Text = $"{Constants.TextPuntsRuta}: {numeroDePuntsRuta}";
-        var asd = conn.Table<Ruta>().Where(w => w.Finalitzada).FirstOrDefaultAsync().Result;
+        ActualitzarLabelsContadors(null, null);
+        VisibilitatBotoRecuperarRuta();
     }
 
     private async void IniciBtn_Clicked(object sender, EventArgs e)
     {
         await CrearTaules();
-        numeroDePuntsInteres = 0;
-        LabelPuntsInteres.Text = $"{Constants.TextPuntsInteres}: {numeroDePuntsInteres}";
-        numeroDePuntsRuta = 0;
-        LabelPuntsRuta.Text = $"{Constants.TextPuntsRuta}: {numeroDePuntsRuta}";
+        ActualitzarLabelsContadors(0, 0);
         await InsertarNovaRutaBD();
         await AnyadirPuntRuta();
         PuntInteresBtn.IsEnabled = true;
@@ -38,37 +37,43 @@ public partial class MainPage : ContentPage
 
     private async void PuntInteresBtn_Clicked(object sender, EventArgs e)
     {
-        IniciBtn.IsEnabled = false;
-        PuntInteresBtn.IsEnabled = false;
-        FinalBtn.IsEnabled = false;
-        PuntRutaBtn.IsEnabled = false;
+        DesactivarTotsElsBotons();
         await AnyadirPuntInteres(PuntInteresEntry.Text);
-        PuntInteresEntry.Text = null;
-        IniciBtn.IsEnabled = true;
-        PuntInteresBtn.IsEnabled = true;
-        FinalBtn.IsEnabled = true;
-        PuntRutaBtn.IsEnabled = true;
+        VisibilitatBotonsDespresAfegirPunts();
     }
     private async void PuntRutaBtn_Clicked(object sender, EventArgs e)
     {
-        IniciBtn.IsEnabled = false;
-        PuntInteresBtn.IsEnabled = false;
-        FinalBtn.IsEnabled = false;
-        PuntRutaBtn.IsEnabled = false;
+        DesactivarTotsElsBotons();
         await AnyadirPuntRuta();
-        PuntInteresEntry.Text = null;
-        IniciBtn.IsEnabled = true;
-        PuntInteresBtn.IsEnabled = true;
-        FinalBtn.IsEnabled = true;
-        PuntRutaBtn.IsEnabled = true;
+        VisibilitatBotonsDespresAfegirPunts();
     }
     private async void FinalBtn_Clicked(object sender, EventArgs e)
     {
+        DesactivarTotsElsBotons();
         await AnyadirPuntRuta();
         await FinalitzarRuta();
-        PuntInteresBtn.IsEnabled = false;
-        FinalBtn.IsEnabled = false;
-        PuntRutaBtn.IsEnabled = false;
+        IniciBtn.IsEnabled = true;
+    }
+
+    private async void RecuperarBtn_Clicked(object sender, EventArgs e)
+    {
+        Ruta ruta = await conn.Table<Ruta>().Where(w => !w.Finalitzada).FirstOrDefaultAsync();
+        if (ruta != null)
+        {
+            rutaId = ruta.Id;
+            List<PuntInteres> puntsInteres = await conn.Table<PuntInteres>().Where(w => w.RutaId == ruta.Id).ToListAsync();
+            List<PuntRuta> puntsRuta = await conn.Table<PuntRuta>().Where(w => w.RutaId == ruta.Id).ToListAsync();
+            int numeroPuntsInteres = puntsInteres.Count;
+            int numeroPuntsRuta = puntsRuta.Count;
+            ActualitzarLabelsContadors(numeroPuntsInteres, numeroPuntsRuta);
+            VisibilitatBotonsDespresAfegirPunts();
+            RecuperarBtn.IsEnabled = false;
+            await Toast.Make($"S'ha recuperat la ruta amb data d'inici: {ruta.DataHora}").Show();
+        }
+        else
+        {
+            await Toast.Make($"No s'ha pogut recuperar cap ruta").Show();
+        }
     }
 
     private async Task FinalitzarRuta()
@@ -110,9 +115,30 @@ public partial class MainPage : ContentPage
             xml = xml + "</root>\r\n";
 
             string fitxer = $"ruta_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}";
-            File.WriteAllText($"{Constants.RutaFitxer}{fitxer}.{Constants.ExtensioFitxer}", xml);
-            await conn.UpdateAsync(ruta);
+            using var stream = new MemoryStream(Encoding.Default.GetBytes(xml));
+            _cancelTokenSource = new CancellationTokenSource();
+            try
+            {
+                var fileLocation = await FileSaver.Default.SaveAsync($"{fitxer}.{Constants.ExtensioFitxer}", stream, _cancelTokenSource.Token);
+                await Toast.Make($"Fitxer guardat correctament", CommunityToolkit.Maui.Core.ToastDuration.Long).Show(_cancelTokenSource.Token);
+                await conn.UpdateAsync(ruta);
+            }
+            catch (Exception ex)
+            {
+                await Toast.Make($"El fitxer no s'ha pogut guardar. Recupera la ruta i prova un altre directori", CommunityToolkit.Maui.Core.ToastDuration.Long).Show(_cancelTokenSource.Token);
+            }
+            VisibilitatBotoRecuperarRuta();
+            ActualitzarLabelsContadors(0, 0);
         }
+    }
+
+    private void VisibilitatBotoRecuperarRuta()
+    {
+        Ruta rutaNoFinalitzada = conn.Table<Ruta>().Where(w => !w.Finalitzada).FirstOrDefaultAsync().Result;
+        if (rutaNoFinalitzada != null)
+            RecuperarBtn.IsEnabled = true;
+        else
+            RecuperarBtn.IsEnabled = false;
     }
 
     private async Task AnyadirPuntInteres(string nom)
@@ -125,8 +151,7 @@ public partial class MainPage : ContentPage
 
         await AnyadirPuntInteresDB(location, nom);
 
-        numeroDePuntsInteres++;
-        LabelPuntsInteres.Text = $"{Constants.TextPuntsInteres}: {numeroDePuntsInteres}";
+        ActualitzarLabelsContadors(++numeroDePuntsInteres, null);
     }
 
     private async Task AnyadirPuntRuta()
@@ -139,8 +164,7 @@ public partial class MainPage : ContentPage
 
         await AnyadirPuntRutaDB(location);
 
-        numeroDePuntsRuta++;
-        LabelPuntsRuta.Text = $"{Constants.TextPuntsRuta}: {numeroDePuntsRuta}";
+        ActualitzarLabelsContadors(null, ++numeroDePuntsRuta);
     }
 
     private async Task CrearTaules()
@@ -207,20 +231,33 @@ public partial class MainPage : ContentPage
         int result = await conn.InsertAsync(puntInteres);
     }
 
-    private async void RecuperarBtn_Clicked(object sender, EventArgs e)
+    private void VisibilitatBotonsDespresAfegirPunts()
     {
-        Ruta ruta = await conn.Table<Ruta>().Where(w => !w.Finalitzada).FirstOrDefaultAsync();
-        if (ruta != null)
-        {
-            rutaId = ruta.Id;
-            List<PuntInteres> puntsInteres = await conn.Table<PuntInteres>().Where(w => w.RutaId == ruta.Id).ToListAsync();
-            List<PuntRuta> puntsRuta = await conn.Table<PuntRuta>().Where(w => w.RutaId == ruta.Id).ToListAsync();
-            int numeroPuntsInteres = puntsInteres.Count;
-            int numeroPuntsRuta = puntsRuta.Count;
-            numeroDePuntsInteres = numeroPuntsInteres;
-            numeroDePuntsRuta = numeroPuntsRuta;
-            LabelPuntsInteres.Text = $"{Constants.TextPuntsInteres}: {numeroPuntsInteres}";
-            LabelPuntsRuta.Text = $"{Constants.TextPuntsRuta}: {numeroPuntsRuta}";
-        }
+        PuntInteresEntry.Text = null;
+        IniciBtn.IsEnabled = true;
+        PuntInteresBtn.IsEnabled = true;
+        PuntRutaBtn.IsEnabled = true;
+        if (!FinalBtn.IsEnabled)
+            if (numeroDePuntsInteres > 0 && numeroDePuntsRuta > 0)
+                FinalBtn.IsEnabled = true;
+    }
+
+    private void DesactivarTotsElsBotons()
+    {
+        IniciBtn.IsEnabled = false;
+        PuntInteresBtn.IsEnabled = false;
+        FinalBtn.IsEnabled = false;
+        PuntRutaBtn.IsEnabled = false;
+        RecuperarBtn.IsEnabled = false;
+    }
+
+    private void ActualitzarLabelsContadors(int? numeroPuntsInteres, int? numeroPuntsRuta)
+    {
+        if (numeroPuntsInteres.HasValue)
+            numeroDePuntsInteres = numeroPuntsInteres.Value;
+        if (numeroPuntsRuta.HasValue)
+            numeroDePuntsRuta = numeroPuntsRuta.Value;
+        LabelPuntsInteres.Text = $"{Constants.TextPuntsInteres}: {numeroDePuntsInteres}";
+        LabelPuntsRuta.Text = $"{Constants.TextPuntsRuta}: {numeroDePuntsRuta}";
     }
 }
