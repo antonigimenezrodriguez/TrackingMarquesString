@@ -27,12 +27,6 @@
                 SemanticProperties.Description="Welcome to dot net Multi platform App U I"
                 FontSize="16"
                 HorizontalOptions="Center" />-->
-            <!--<Button
-                x:Name="RecuperarRutaBtn"
-                Text="Recuperar ruta no finalitzada"
-                SemanticProperties.Hint="Recuperar ruta no finalitzada"
-                Clicked="RecuperarBtn_Clicked"
-                HorizontalOptions="Center" />-->
 
             <Button 
                 x:Name="RecuperarBtn"
