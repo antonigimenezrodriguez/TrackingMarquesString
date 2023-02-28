@@ -26,7 +26,7 @@ public partial class MainPage : ContentPage
 
     private async void IniciBtn_Clicked(object sender, EventArgs e)
     {
-        await CrearTaules();
+        CrearTaules();
         ActualitzarLabelsContadors(0, 0);
         await InsertarNovaRutaBD();
         await AnyadirPuntRuta();
@@ -57,6 +57,7 @@ public partial class MainPage : ContentPage
 
     private async void RecuperarBtn_Clicked(object sender, EventArgs e)
     {
+        CrearTaules();
         Ruta ruta = await conn.Table<Ruta>().Where(w => !w.Finalitzada).FirstOrDefaultAsync();
         if (ruta != null)
         {
@@ -73,6 +74,7 @@ public partial class MainPage : ContentPage
         else
         {
             await Toast.Make($"No s'ha pogut recuperar cap ruta").Show();
+            RecuperarBtn.IsEnabled = false;
         }
     }
 
@@ -134,6 +136,7 @@ public partial class MainPage : ContentPage
 
     private void VisibilitatBotoRecuperarRuta()
     {
+        CrearTaules();
         Ruta rutaNoFinalitzada = conn.Table<Ruta>().Where(w => !w.Finalitzada).FirstOrDefaultAsync().Result;
         if (rutaNoFinalitzada != null)
             RecuperarBtn.IsEnabled = true;
@@ -167,7 +170,7 @@ public partial class MainPage : ContentPage
         ActualitzarLabelsContadors(null, ++numeroDePuntsRuta);
     }
 
-    private async Task CrearTaules()
+    private async void CrearTaules()
     {
         await conn.CreateTableAsync<Ruta>();
 
