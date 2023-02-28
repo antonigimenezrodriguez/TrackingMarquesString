@@ -120,12 +120,12 @@ public partial class MainPage : ContentPage
             try
             {
                 var fileLocation = await FileSaver.Default.SaveAsync($"{fitxer}.{Constants.ExtensioFitxer}", stream, _cancelTokenSource.Token);
-                await Toast.Make($"File is saved: {fileLocation}").Show(_cancelTokenSource.Token);
+                await Toast.Make($"Fitxer guardat correctament", CommunityToolkit.Maui.Core.ToastDuration.Long).Show(_cancelTokenSource.Token);
                 await conn.UpdateAsync(ruta);
             }
             catch (Exception ex)
             {
-                await Toast.Make($"File is not saved, {ex.Message}").Show(_cancelTokenSource.Token);
+                await Toast.Make($"El fitxer no s'ha pogut guardar. Recupera la ruta i prova un altre directori", CommunityToolkit.Maui.Core.ToastDuration.Long).Show(_cancelTokenSource.Token);
             }
             VisibilitatBotoRecuperarRuta();
             ActualitzarLabelsContadors(0, 0);
