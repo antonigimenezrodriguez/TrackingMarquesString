@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Storage;
 using SQLite;
+using System.Globalization;
 using System.Text;
 using TrackingMarques.Models;
 
@@ -14,6 +15,7 @@ public partial class MainPage : ContentPage
     private CancellationTokenSource _cancelTokenSource;
     int rutaId = 0;
     SQLiteAsyncConnection conn = new SQLiteAsyncConnection(Constants.DatabasePath, Constants.Flags);
+    NumberFormatInfo nfi = new NumberFormatInfo() { NumberDecimalSeparator = "." };
 
     public MainPage()
     {
@@ -94,9 +96,9 @@ public partial class MainPage : ContentPage
             foreach (PuntRuta puntRuta in puntsRuta)
             {
                 xml = xml + "<ruta>" + "\r\n";
-                xml = xml + "<latitud>" + puntRuta.Latitud + "</latitud>" + "\r\n";
-                xml = xml + "<longitud>" + puntRuta.Longitud + "</longitud>" + "\r\n";
-                xml = xml + "<elevacio>" + puntRuta.Elevacio + "</elevacio>" + "\r\n";
+                xml = xml + "<latitud>" + puntRuta.Latitud.ToString(nfi) + "</latitud>" + "\r\n";
+                xml = xml + "<longitud>" + puntRuta.Longitud.ToString(nfi) + "</longitud>" + "\r\n";
+                xml = xml + "<elevacio>" + puntRuta.Elevacio?.ToString(nfi) + "</elevacio>" + "\r\n";
                 xml = xml + "<dataHora>" + puntRuta.DataHora.ToString("yyyy-MM-ddTHH:mm:ssZ") + "</dataHora>" + "\r\n";
                 xml = xml + "</ruta>" + "\r\n";
             }
@@ -107,9 +109,9 @@ public partial class MainPage : ContentPage
             {
                 xml = xml + "<punt>" + "\r\n";
                 xml = xml + "<nom>" + puntInteres.Nom + "</nom>" + "\r\n";
-                xml = xml + "<latitud>" + puntInteres.Latitud + "</latitud>" + "\r\n";
-                xml = xml + "<longitud>" + puntInteres.Longitud + "</longitud>" + "\r\n";
-                xml = xml + "<elevacio>" + puntInteres.Elevacio + "</elevacio>" + "\r\n";
+                xml = xml + "<latitud>" + puntInteres.Latitud.ToString(nfi) + "</latitud>" + "\r\n";
+                xml = xml + "<longitud>" + puntInteres.Longitud.ToString(nfi) + "</longitud>" + "\r\n";
+                xml = xml + "<elevacio>" + puntInteres.Elevacio?.ToString(nfi) + "</elevacio>" + "\r\n";
                 xml = xml + "<dataHora>" + puntInteres.DataHora.ToString("yyyy-MM-ddTHH:mm:ssZ") + "</dataHora>" + "\r\n";
                 xml = xml + "</punt>" + "\r\n";
             }
