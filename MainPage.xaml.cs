@@ -22,6 +22,7 @@ public partial class MainPage : ContentPage
         numeroDePuntsInteres = 0;
         numeroDePuntsRuta = 0;
         InitializeComponent();
+        CrearTaules();
         ActualitzarLabelsContadors(null, null);
         VisibilitatBotoRecuperarRuta();
     }
