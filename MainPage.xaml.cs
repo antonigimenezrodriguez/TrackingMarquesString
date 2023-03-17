@@ -29,14 +29,19 @@ public partial class MainPage : ContentPage
 
     private async void IniciBtn_Clicked(object sender, EventArgs e)
     {
-        bool answer = await DisplayAlert("Iniciar nova ruta?", "Vols iniciar una nova ruta? Qualsevol progrés es perdrà", "Sí", "No");
-        CrearTaules();
-        ActualitzarLabelsContadors(0, 0);
-        await InsertarNovaRutaBD();
-        await AnyadirPuntRuta();
-        PuntInteresBtn.IsEnabled = true;
-        PuntRutaBtn.IsEnabled = true;
-        RecuperarBtn.IsEnabled = false;
+        bool resposta = await DisplayAlert("Iniciar nova ruta?", "Vols iniciar una nova ruta? Qualsevol progrés es perdrà", "Sí", "No");
+        if (resposta)
+        {
+            IniciBtn.IsEnabled = false;
+            CrearTaules();
+            ActualitzarLabelsContadors(0, 0);
+            await InsertarNovaRutaBD();
+            await AnyadirPuntRuta();
+            PuntInteresBtn.IsEnabled = true;
+            PuntRutaBtn.IsEnabled = true;
+            RecuperarBtn.IsEnabled = false;
+            IniciBtn.IsEnabled = true;
+        }
     }
 
     private async void PuntInteresBtn_Clicked(object sender, EventArgs e)
@@ -53,11 +58,14 @@ public partial class MainPage : ContentPage
     }
     private async void FinalBtn_Clicked(object sender, EventArgs e)
     {
-        bool answer = await DisplayAlert("Iniciar nova ruta?", "Vols finalitzar la ruta? Es guardarà el fitxer XML i es començarà de nou", "Sí", "No");
-        DesactivarTotsElsBotons();
-        await AnyadirPuntRuta();
-        await FinalitzarRuta();
-        IniciBtn.IsEnabled = true;
+        bool resposta = await DisplayAlert("Iniciar nova ruta?", "Vols finalitzar la ruta? Es guardarà el fitxer XML i es començarà de nou", "Sí", "No");
+        if (resposta)
+        {
+            DesactivarTotsElsBotons();
+            await AnyadirPuntRuta();
+            await FinalitzarRuta();
+            IniciBtn.IsEnabled = true;
+        }
     }
 
     private async void RecuperarBtn_Clicked(object sender, EventArgs e)
