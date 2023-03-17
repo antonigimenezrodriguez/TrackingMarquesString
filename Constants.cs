@@ -13,7 +13,7 @@ public static class Constants
 
     public static string DatabasePath => Path.Combine(FileSystem.AppDataDirectory, DatabaseFilename);
 
-    public static string RutaFitxer = "/storage/emulated/0/Documents/";
+    public static string RutaFitxer = "/storage/emulated/0/Download/xml/";
     public static string ExtensioFitxer = "xml";
     public static string TextPuntsInteres = "Punts interés introduïts";
     public static string TextPuntsRuta = "Punts ruta introduïts";
