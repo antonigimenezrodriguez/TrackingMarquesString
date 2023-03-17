@@ -16,9 +16,9 @@
                 HorizontalOptions="Center" />
 
             <Label
-                Text="1r ASIX - 1r DAM 2022-2023"
+                Text="1r ASIX - 1r DAM - 1r DAW 2022-2023"
                 SemanticProperties.HeadingLevel="Level1"
-                FontSize="24"
+                FontSize="20"
                 HorizontalOptions="Center" />
 
             <!--<Label
