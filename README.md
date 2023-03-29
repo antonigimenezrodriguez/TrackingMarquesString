@@ -10,6 +10,7 @@ Marcar punts de ruta
 Marcars punts d'interés amb un nom
 Guardar la ruta en el següent format:
 
+```xml
 <root>
     <puntsRuta>
         <ruta>
@@ -48,3 +49,4 @@ Guardar la ruta en el següent format:
         .
     </puntsInteres>
 </root>
+```
