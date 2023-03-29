@@ -4,7 +4,16 @@ Aplicació desarrollada en MAUI i .NET 7.0.
 
 L'aplicació està pensada per ser emprada en les sortides que es realitzen en M4 - Llenguatge de Marques i Sistemes de Gestió de la Informació als cicles superiors DAM-DAW-ASIX
 
-Features:
+Proposta projecte interdisciplinar:
+
+- **Llenguatge de Marques i Sistemes de Gestió de la Informació:** Dissenyar estructura XML
+- **Programació:** Implementació dels mètodes per generar l'XML
+- **Bases de Dades:** Dissenyar esquema de la base de dades per guardar la ruta i els punts
+- **Programació:** Implementació de la base de dades dissenyada
+- **Sistemes informàtics:** Configurar serveis en el núvol per guardar en temps real els punts en el núvol.
+- **Llenguatge de Marques i Sistemes de Gestió de la Informació:** Transformacions XSL per pujar les rutes a les distintes plataformes.
+
+Features APP (sols provada en Android):
 
 Marcar punts de ruta
 Marcars punts d'interés amb un nom
@@ -50,5 +59,5 @@ Guardar la ruta en el següent format:
     </puntsInteres>
 </root>
 ```
-![photo_2023-03-29_15-12-46](https://user-images.githubusercontent.com/74731165/228549413-a2103eac-353e-4d15-b651-8a388ed0694a.jpg)
+<img src="https://user-images.githubusercontent.com/74731165/228549413-a2103eac-353e-4d15-b651-8a388ed0694a.jpg" alt= “” width="295" height="582">
 
