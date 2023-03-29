@@ -50,3 +50,5 @@ Guardar la ruta en el següent format:
     </puntsInteres>
 </root>
 ```
+![photo_2023-03-29_15-12-46](https://user-images.githubusercontent.com/74731165/228549413-a2103eac-353e-4d15-b651-8a388ed0694a.jpg)
+
